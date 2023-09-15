@@ -4,28 +4,37 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.view.ViewTreeObserver
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -43,16 +52,18 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.pratikk.findingfalcone.data.planets.model.Planet
 import com.pratikk.findingfalcone.ui.theme.FindingFalconeTheme
-
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -60,10 +71,10 @@ import com.pratikk.findingfalcone.ui.theme.FindingFalconeTheme
 fun BaseExposedDropdown(
     modifier: Modifier = Modifier,
     list: () -> List<Planet>,
-    searchParam:String = "",
-    onSearch:(String) -> Unit = {},
+    selectedItem: Planet? = null,
+    onSearch: (String) -> Unit = {},
     onClick: (Planet) -> Unit = {},
-    hintText: String? = null
+    hintText: String = ""
 ) {
     val keyboardVisible by keyboardAsState()
     val focusManager = LocalFocusManager.current
@@ -74,48 +85,52 @@ fun BaseExposedDropdown(
         }
     }
     LaunchedEffect(key1 = shouldRemoveFocus, block = {
-        if(shouldRemoveFocus)
+        if (shouldRemoveFocus)
             focusManager.clearFocus()
     })
-    ExposedDropdownMenuBox(
+    var searchParam by remember {
+        mutableStateOf("")
+    }
+    Column(
         modifier = modifier.clickable {
             expanded = !expanded
-        },
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }) {
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(),
-            value = searchParam,
-            onValueChange = {
-                onSearch(it)
-                expanded = true
-            },
-            label = {
-                if (!hintText.isNullOrEmpty())
-                    Text(text = hintText, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            },
-            trailingIcon = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if(searchParam.isNotEmpty())
-                        TextButton(onClick = {
-                            onSearch("")
-                            expanded = false
-                            focusManager.clearFocus()
-                        }) {
-                            Text(text = "Clear")
-                        }
-                    IconButton(onClick = {  }) {
-                        DropdownTrailingIcon(expanded = expanded)
-                    }
-                }
-            }, keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
+        }) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "${hintText}:",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold)
+            TextButton(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                shape = MaterialTheme.shapes.small,
+                onClick = { expanded = !expanded }) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    style = MaterialTheme.typography.titleMedium,
+                    text = selectedItem?.name ?: "Select")
+                Icon(
+                    imageVector = if (selectedItem != null) Icons.Outlined.Edit else Icons.Outlined.Add,
+                    contentDescription = "Select Destination"
+                )
+            }
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp),
+                value = searchParam,
+                onValueChange = {
+                    searchParam = it
+                    onSearch(it)
+                },
+                label = {
+                    Text(text = "Search", maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }, keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                )
             )
-        )
-        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             list().forEach {
                 BaseDropdownItem(value = { "${it.name} (Distance ${it.distance})" },
                     onClick = {

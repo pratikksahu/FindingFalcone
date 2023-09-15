@@ -46,7 +46,6 @@ class FalconeViewModel : ViewModel() {
     val planets4 = _planet4.asStateFlow()
 
     val selectedPlanetMap = mutableStateMapOf<Int, Planet>()
-    val searchPlanetMap = mutableStateMapOf<Int, String?>()
     val selectedVehiclesMap = mutableStateMapOf<Int, Vehicle>()
     var totalTime = mutableStateOf<Long>(0L)
     init {
@@ -92,7 +91,6 @@ class FalconeViewModel : ViewModel() {
 
     fun searchPlanets1(searchString: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            searchPlanetMap[0] = searchString
             selectedPlanetMap.remove(0)
             selectedVehiclesMap.remove(0)
             refreshRadioButton()
@@ -108,7 +106,6 @@ class FalconeViewModel : ViewModel() {
 
     fun searchPlanets2(searchString: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            searchPlanetMap[1] = searchString
             selectedPlanetMap.remove(1)
             selectedVehiclesMap.remove(1)
             refreshRadioButton()
@@ -124,7 +121,6 @@ class FalconeViewModel : ViewModel() {
 
     fun searchPlanets3(searchString: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            searchPlanetMap[2] = searchString
             selectedPlanetMap.remove(2)
             selectedVehiclesMap.remove(2)
             refreshRadioButton()
@@ -140,7 +136,6 @@ class FalconeViewModel : ViewModel() {
 
     fun searchPlanets4(searchString: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            searchPlanetMap[3] = searchString
             selectedPlanetMap.remove(3)
             selectedVehiclesMap.remove(3)
             refreshRadioButton()
@@ -155,7 +150,6 @@ class FalconeViewModel : ViewModel() {
     }
 
     fun setPlanet(idx: Int, planet: Planet) {
-        searchPlanetMap[idx] = planet.name
         selectedPlanetMap[idx] = planet
     }
 
@@ -178,10 +172,7 @@ class FalconeViewModel : ViewModel() {
             })
             totalTime.value = 0
             selectedPlanetMap.forEach { (i, planets) ->
-                val veh = selectedVehiclesMap[i]
-                if(planets == null || veh == null) {
-                    return@forEach
-                }
+                val veh = selectedVehiclesMap[i] ?: return@forEach
                 totalTime.value += (planets.distance.div(veh.speed))
             }
         }
@@ -193,7 +184,6 @@ class FalconeViewModel : ViewModel() {
             _planet3.emit(buildList { addAll(_planet.value)})
             _planet4.emit(buildList { addAll(_planet.value)})
             selectedPlanetMap.clear()
-            searchPlanetMap.clear()
             selectedVehiclesMap.clear()
             _selectedVehicle.emit(_vehicle.value.map { veh ->
                 veh.copy()

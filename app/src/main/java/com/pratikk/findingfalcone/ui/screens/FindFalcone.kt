@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSizeIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -38,12 +39,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.pratikk.findingfalcone.data.planets.model.Planet
 import com.pratikk.findingfalcone.data.vehicles.model.Vehicle
@@ -61,7 +64,7 @@ import com.pratikk.findingfalcone.ui.screens.viewmodel.MainViewModel
 fun FindFalcone(
     mainViewModel: MainViewModel,
     falconeViewModel: FalconeViewModel,
-    findFalcone:() -> Unit = {}
+    findFalcone: () -> Unit = {}
 ) {
     val vehicles by falconeViewModel.vehicles.collectAsState()
     val destinations1 by falconeViewModel.planets1.collectAsState()
@@ -69,8 +72,6 @@ fun FindFalcone(
     val destinations3 by falconeViewModel.planets3.collectAsState()
     val destinations4 by falconeViewModel.planets4.collectAsState()
     val selectedPlanetMap = falconeViewModel.selectedPlanetMap
-    val searchPlanetMap =
-        falconeViewModel.searchPlanetMap
     val selectedVehicleMap = falconeViewModel.selectedVehiclesMap
     val uiState: UIState by falconeViewModel.uiState.collectAsState()
     val localConfiguration = LocalConfiguration.current
@@ -157,12 +158,13 @@ fun FindFalcone(
                         }
                         BaseExposedDropdown(
                             modifier = Modifier.padding(bottom = 8.dp),
+                            selectedItem = selectedPlanetMap[0],
                             list = {
                                 destinations1.filter {
-                                    !selectedPlanetMap.filterKeys { it != 0 }.map { it.value?.name }.contains(it.name)
+                                    !selectedPlanetMap.filterKeys { it != 0 }.map { it.value?.name }
+                                        .contains(it.name)
                                 }
                             },
-                            searchParam = searchPlanetMap[0] ?: "",
                             onSearch = {
                                 falconeViewModel.searchPlanets1(it)
                             },
@@ -171,30 +173,24 @@ fun FindFalcone(
                             }, hintText = "Destination 1"
                         )
                         if (showVehicles)
-                            LazyHorizontalGrid(
+                            VehicleOptions(
                                 modifier = Modifier.requiredSizeIn(maxHeight = maxHeight),
-                                rows = GridCells.Fixed(2)
-                            ) {
-                                items(vehicles) {
-                                    VehicleRadioButton(
-                                        modifier = Modifier
-                                            .wrapContentSize()
-                                            .onSizeChanged {
-                                                itemHeight = it.height
-                                            },
-                                        planet = selectedPlanetMap[0],
-                                        item = it,
-                                        selectedVehicle = selectedVehicleMap[0],
-                                        onClick = {
-                                            falconeViewModel.setVehicle(0, it)
-                                        })
+                                idx = 0,
+                                vehicles = vehicles,
+                                selectedVehicleMap = selectedVehicleMap,
+                                selectedPlanetMap = selectedPlanetMap,
+                                onSizeChanged = {
+                                    itemHeight = it.height
+                                },
+                                onClick = {
+                                    falconeViewModel.setVehicle(0, it)
                                 }
-                            }
+                            )
 
                     }
                     item {
                         val showVehicles by remember(selectedPlanetMap[1]) {
-                            derivedStateOf { selectedPlanetMap[1] != null}
+                            derivedStateOf { selectedPlanetMap[1] != null }
                         }
                         val density = LocalDensity.current
                         var itemHeight by remember {
@@ -208,12 +204,13 @@ fun FindFalcone(
                         }
                         BaseExposedDropdown(
                             modifier = Modifier.padding(bottom = 8.dp),
+                            selectedItem = selectedPlanetMap[1],
                             list = {
                                 destinations2.filter {
-                                    !selectedPlanetMap.filterKeys { it != 1 }.map { it.value?.name }.contains(it.name)
+                                    !selectedPlanetMap.filterKeys { it != 1 }.map { it.value?.name }
+                                        .contains(it.name)
                                 }
                             },
-                            searchParam = searchPlanetMap[1] ?: "",
                             onSearch = {
                                 falconeViewModel.searchPlanets2(it)
                             },
@@ -222,25 +219,19 @@ fun FindFalcone(
                             }, hintText = "Destination 2"
                         )
                         if (showVehicles)
-                            LazyHorizontalGrid(
+                            VehicleOptions(
                                 modifier = Modifier.requiredSizeIn(maxHeight = maxHeight),
-                                rows = GridCells.Fixed(2)
-                            ) {
-                                items(vehicles) {
-                                    VehicleRadioButton(
-                                        modifier = Modifier
-                                            .wrapContentSize()
-                                            .onSizeChanged {
-                                                itemHeight = it.height
-                                            },
-                                        planet = selectedPlanetMap[1],
-                                        item = it,
-                                        selectedVehicle = selectedVehicleMap[1],
-                                        onClick = {
-                                            falconeViewModel.setVehicle(1, it)
-                                        })
+                                idx = 1,
+                                vehicles = vehicles,
+                                selectedVehicleMap = selectedVehicleMap,
+                                selectedPlanetMap = selectedPlanetMap,
+                                onSizeChanged = {
+                                    itemHeight = it.height
+                                },
+                                onClick = {
+                                    falconeViewModel.setVehicle(1, it)
                                 }
-                            }
+                            )
                     }
                     item {
                         val showVehicles by remember(selectedPlanetMap[2]) {
@@ -258,12 +249,13 @@ fun FindFalcone(
                         }
                         BaseExposedDropdown(
                             modifier = Modifier.padding(bottom = 8.dp),
+                            selectedItem = selectedPlanetMap[2],
                             list = {
                                 destinations3.filter {
-                                    !selectedPlanetMap.filterKeys { it != 2 }.map { it.value?.name }.contains(it.name)
+                                    !selectedPlanetMap.filterKeys { it != 2 }.map { it.value?.name }
+                                        .contains(it.name)
                                 }
                             },
-                            searchParam = searchPlanetMap[2] ?: "",
                             onSearch = {
                                 falconeViewModel.searchPlanets3(it)
                             },
@@ -272,25 +264,19 @@ fun FindFalcone(
                             }, hintText = "Destination 3"
                         )
                         if (showVehicles)
-                            LazyHorizontalGrid(
+                            VehicleOptions(
                                 modifier = Modifier.requiredSizeIn(maxHeight = maxHeight),
-                                rows = GridCells.Fixed(2)
-                            ) {
-                                items(vehicles) {
-                                    VehicleRadioButton(
-                                        modifier = Modifier
-                                            .wrapContentSize()
-                                            .onSizeChanged {
-                                                itemHeight = it.height
-                                            },
-                                        planet = selectedPlanetMap[2],
-                                        item = it,
-                                        selectedVehicle = selectedVehicleMap[2],
-                                        onClick = {
-                                            falconeViewModel.setVehicle(2, it)
-                                        })
+                                idx = 2,
+                                vehicles = vehicles,
+                                selectedVehicleMap = selectedVehicleMap,
+                                selectedPlanetMap = selectedPlanetMap,
+                                onSizeChanged = {
+                                    itemHeight = it.height
+                                },
+                                onClick = {
+                                    falconeViewModel.setVehicle(2, it)
                                 }
-                            }
+                            )
                     }
                     item {
                         val showVehicles by remember(selectedPlanetMap[3]) {
@@ -308,12 +294,13 @@ fun FindFalcone(
                         }
                         BaseExposedDropdown(
                             modifier = Modifier.padding(bottom = 8.dp),
+                            selectedItem = selectedPlanetMap[3],
                             list = {
                                 destinations4.filter {
-                                    !selectedPlanetMap.filterKeys { it != 3 }.map { it.value?.name }.contains(it.name)
+                                    !selectedPlanetMap.filterKeys { it != 3 }.map { it.value?.name }
+                                        .contains(it.name)
                                 }
                             },
-                            searchParam = searchPlanetMap[3] ?: "",
                             onSearch = {
                                 falconeViewModel.searchPlanets4(it)
                             },
@@ -322,25 +309,19 @@ fun FindFalcone(
                             }, hintText = "Destination 4"
                         )
                         if (showVehicles)
-                            LazyHorizontalGrid(
+                            VehicleOptions(
                                 modifier = Modifier.requiredSizeIn(maxHeight = maxHeight),
-                                rows = GridCells.Fixed(2)
-                            ) {
-                                items(vehicles) {
-                                    VehicleRadioButton(
-                                        modifier = Modifier
-                                            .wrapContentSize()
-                                            .onSizeChanged {
-                                                itemHeight = it.height
-                                            },
-                                        planet = selectedPlanetMap[3],
-                                        item = it,
-                                        selectedVehicle = selectedVehicleMap[3],
-                                        onClick = {
-                                            falconeViewModel.setVehicle(3, it)
-                                        })
+                                idx = 3,
+                                vehicles = vehicles,
+                                selectedVehicleMap = selectedVehicleMap,
+                                selectedPlanetMap = selectedPlanetMap,
+                                onSizeChanged = {
+                                    itemHeight = it.height
+                                },
+                                onClick = {
+                                    falconeViewModel.setVehicle(3, it)
                                 }
-                            }
+                            )
                         if (localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
                             Spacer(modifier = Modifier.height(100.dp))
                     }
@@ -377,18 +358,61 @@ fun FindFalcone(
 }
 
 @Composable
+fun VehicleOptions(
+    modifier: Modifier,
+    idx: Int,
+    vehicles: List<Vehicle>,
+    selectedVehicleMap: SnapshotStateMap<Int, Vehicle>,
+    selectedPlanetMap: SnapshotStateMap<Int, Planet>,
+    onSizeChanged: (IntSize) -> Unit,
+    onClick: (Vehicle) -> Unit
+) {
+    val localConfiguration = LocalConfiguration.current
+    if (localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
+        LazyHorizontalGrid(
+            modifier = modifier,
+            rows = GridCells.Fixed(2)
+        ) {
+            items(vehicles) {
+                VehicleRadioButton(
+                    modifier = Modifier
+                        .onSizeChanged {
+                            onSizeChanged(it)
+                        },
+                    planet = selectedPlanetMap[idx],
+                    item = it,
+                    selectedVehicle = selectedVehicleMap[idx],
+                    onClick = { onClick(it) })
+            }
+        }
+    else
+        Row {
+            vehicles.forEach {
+                VehicleRadioButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    planet = selectedPlanetMap[idx],
+                    item = it,
+                    selectedVehicle = selectedVehicleMap[idx],
+                    onClick = { onClick(it) })
+            }
+
+        }
+}
+
+@Composable
 fun VehicleRadioButton(
     modifier: Modifier = Modifier,
-    planet:Planet?,
+    planet: Planet?,
     item: Vehicle,
     selectedVehicle: Vehicle?,
     onClick: () -> Unit
 ) {
-    val isEnabled by remember(planet,selectedVehicle,item) {
+    val isEnabled by remember(planet, selectedVehicle, item) {
         derivedStateOf {
-            if(planet == null)
+            if (planet == null)
                 item.totalNo > 0 || selectedVehicle?.name == item.name
-            else if(selectedVehicle != null)
+            else if (selectedVehicle != null)
                 item.maxDistance >= planet.distance && (item.totalNo > 0 || selectedVehicle.name == item.name)
             else
                 item.maxDistance >= planet.distance && item.totalNo > 0
@@ -417,3 +441,4 @@ fun VehicleRadioButton(
         }
     }
 }
+
