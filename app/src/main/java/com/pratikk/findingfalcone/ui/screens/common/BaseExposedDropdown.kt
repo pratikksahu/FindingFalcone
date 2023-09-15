@@ -9,10 +9,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,9 +32,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -46,10 +53,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
@@ -91,30 +101,61 @@ fun BaseExposedDropdown(
     var searchParam by remember {
         mutableStateOf("")
     }
+    val density = LocalDensity.current
+    var itemWidth by remember {
+        mutableStateOf(0)
+    }
+    val maxWidth by remember(itemWidth) {
+        derivedStateOf{
+            if(itemWidth == 0)
+                return@derivedStateOf 200.dp
+            with(density) { itemWidth.toDp() }
+        }
+    }
     Column(
         modifier = modifier.clickable {
             expanded = !expanded
         }) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "${hintText}:",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold)
-            TextButton(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                shape = MaterialTheme.shapes.small,
-                onClick = { expanded = !expanded }) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    style = MaterialTheme.typography.titleMedium,
-                    text = selectedItem?.name ?: "Select")
-                Icon(
-                    imageVector = if (selectedItem != null) Icons.Outlined.Edit else Icons.Outlined.Add,
-                    contentDescription = "Select Destination"
+        CompositionLocalProvider(
+            LocalTextInputService provides null
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        expanded = !expanded
+                    }
+                    .onSizeChanged {
+                        itemWidth = it.width
+                    },
+                value = selectedItem?.name ?: "",
+                onValueChange = {},
+                readOnly = true,
+                label = {
+                    Text(text = hintText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                },
+                enabled = false,
+                trailingIcon = {
+                    DropdownTrailingIcon(expanded = expanded)
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledContainerColor = Color.Transparent,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            }
+            )
         }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        Spacer(modifier = Modifier.height(5.dp))
+        DropdownMenu(
+            modifier = Modifier.requiredSizeIn(minWidth = maxWidth),
+            expanded = expanded, onDismissRequest = { expanded = false }) {
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()

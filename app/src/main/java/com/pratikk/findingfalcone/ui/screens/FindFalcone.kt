@@ -114,15 +114,16 @@ fun FindFalcone(
                                 Text(modifier = Modifier.fillMaxWidth(),
                                     text = "Select planets to search in",
                                     style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
                                     textAlign = TextAlign.Center)
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         modifier = Modifier
                                             .weight(1f)
-                                            .padding(vertical = 10.dp),
-                                        text = "Total Time ${falconeViewModel.totalTime.value}",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold
+                                            .padding(vertical = 20.dp),
+                                        text = "Total Time : ${falconeViewModel.totalTime.value}",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Medium
                                     )
 
                                     if (selectedPlanetMap.isNotEmpty())
