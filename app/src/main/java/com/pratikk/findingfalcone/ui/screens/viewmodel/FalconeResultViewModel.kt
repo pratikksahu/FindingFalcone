@@ -1,6 +1,7 @@
 package com.pratikk.findingfalcone.ui.screens.viewmodel
 
 import android.view.View
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,8 +33,15 @@ class FalconeResultViewModel : ViewModel() {
     private val _falconeResp = MutableStateFlow<FalconeResponse?>(null)
     val falconeResponse = _falconeResp.asStateFlow()
     var totalTime = mutableStateOf(0L)
+    private val _planets = MutableStateFlow<List<Planet>>(listOf())
+    private val _vehicles = MutableStateFlow<List<Vehicle>>(listOf())
+
     fun getFaclonResult(planets: List<Planet>, vehicles: List<Vehicle>){
         viewModelScope.launch(Dispatchers.IO) {
+            if(_planets.value.isEmpty()){
+                _planets.emit(planets)
+                _vehicles.emit(vehicles)
+            }
             _uiState.emit(UILoading)
             val token = FalconeTokenHelper().getToken()
             if(token is ApiError){
@@ -48,7 +56,9 @@ class FalconeResultViewModel : ViewModel() {
             }
         }
     }
-
+    fun retry(){
+        getFaclonResult(_planets.value,_vehicles.value)
+    }
     fun setTotalTime(value: Long) {
         totalTime.value = value
     }

@@ -17,9 +17,11 @@ class FalconeTokenHelper {
     suspend fun getToken(): ApiResult<String> = coroutineScope{
         withContext(Dispatchers.IO) {
             val req = Request<String>(path = "token", type = REQ_TYPE.POST)
-            val result = networkHelper.makeNetworkRequest(req)
+            val response = networkHelper.makeNetworkRequest(req)
             try {
-                val jsonObject = JSONObject(result)
+                if(response == networkHelper.NETWORK_ERROR)
+                    throw Exception(networkHelper.NETWORK_ERROR)
+                val jsonObject = JSONObject(response)
                 val token = jsonObject.getString("token")
                 ApiSuccess(token)
             }catch (e:Exception){

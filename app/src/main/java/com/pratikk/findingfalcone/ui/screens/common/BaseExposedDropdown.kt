@@ -76,7 +76,6 @@ import com.pratikk.findingfalcone.data.planets.model.Planet
 import com.pratikk.findingfalcone.ui.theme.FindingFalconeTheme
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun BaseExposedDropdown(
     modifier: Modifier = Modifier,

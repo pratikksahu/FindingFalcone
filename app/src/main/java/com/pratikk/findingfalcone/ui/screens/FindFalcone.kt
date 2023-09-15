@@ -10,6 +10,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -53,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import com.pratikk.findingfalcone.data.planets.model.Planet
 import com.pratikk.findingfalcone.data.vehicles.model.Vehicle
 import com.pratikk.findingfalcone.ui.screens.common.BaseExposedDropdown
+import com.pratikk.findingfalcone.ui.screens.common.PlanetSelectionBottomSheet
 import com.pratikk.findingfalcone.ui.screens.common.UIError
 import com.pratikk.findingfalcone.ui.screens.common.UILoading
 import com.pratikk.findingfalcone.ui.screens.common.UIState
@@ -112,9 +115,9 @@ fun FindFalcone(
                         ) {
                             Column {
                                 Text(modifier = Modifier.fillMaxWidth(),
-                                    text = "Select planets to search in",
+                                    text = "Planetary Exploration Choices 🪐",
                                     style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.Medium,
                                     textAlign = TextAlign.Center)
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
@@ -127,7 +130,7 @@ fun FindFalcone(
                                     )
 
                                     if (selectedPlanetMap.isNotEmpty())
-                                        OutlinedButton(
+                                        TextButton(
                                             shape = MaterialTheme.shapes.small,
                                             onClick = {
                                                 falconeViewModel.resetInput()
@@ -144,7 +147,7 @@ fun FindFalcone(
                                                 //Call Api
                                                 findFalcone()
                                             }) {
-                                            Text(text = "Find Falcone")
+                                            Text(text = "Find Falcone 🚀")
                                         }
                                 }
                             }
@@ -164,12 +167,27 @@ fun FindFalcone(
 
                             with(density) { (itemHeight * 2).toDp() }
                         }
-                        BaseExposedDropdown(
-                            modifier = Modifier.padding(bottom = 8.dp),
+//                        BaseExposedDropdown(
+//                            modifier = Modifier.padding(bottom = 8.dp),
+//                            selectedItem = selectedPlanetMap[0],
+//                            list = {
+//                                destinations1.filter {
+//                                    !selectedPlanetMap.filterKeys { it != 0 }.map { it.value?.name }
+//                                        .contains(it.name)
+//                                }
+//                            },
+//                            onSearch = {
+//                                falconeViewModel.searchPlanets1(it)
+//                            },
+//                            onClick = {
+//                                falconeViewModel.setPlanet(0, it)
+//                            }, hintText = "Destination 1"
+//                        )
+                        PlanetSelectionBottomSheet(
                             selectedItem = selectedPlanetMap[0],
                             list = {
                                 destinations1.filter {
-                                    !selectedPlanetMap.filterKeys { it != 0 }.map { it.value?.name }
+                                    !selectedPlanetMap.filterKeys { it != 0 }.map { it.value.name }
                                         .contains(it.name)
                                 }
                             },
@@ -210,8 +228,23 @@ fun FindFalcone(
 
                             with(density) { (itemHeight * 2).toDp() }
                         }
-                        BaseExposedDropdown(
-                            modifier = Modifier.padding(bottom = 8.dp),
+//                        BaseExposedDropdown(
+//                            modifier = Modifier.padding(bottom = 8.dp),
+//                            selectedItem = selectedPlanetMap[1],
+//                            list = {
+//                                destinations2.filter {
+//                                    !selectedPlanetMap.filterKeys { it != 1 }.map { it.value?.name }
+//                                        .contains(it.name)
+//                                }
+//                            },
+//                            onSearch = {
+//                                falconeViewModel.searchPlanets2(it)
+//                            },
+//                            onClick = {
+//                                falconeViewModel.setPlanet(1, it)
+//                            }, hintText = "Destination 2"
+//                        )
+                        PlanetSelectionBottomSheet(
                             selectedItem = selectedPlanetMap[1],
                             list = {
                                 destinations2.filter {
@@ -255,8 +288,23 @@ fun FindFalcone(
 
                             with(density) { (itemHeight * 2).toDp() }
                         }
-                        BaseExposedDropdown(
-                            modifier = Modifier.padding(bottom = 8.dp),
+//                        BaseExposedDropdown(
+//                            modifier = Modifier.padding(bottom = 8.dp),
+//                            selectedItem = selectedPlanetMap[2],
+//                            list = {
+//                                destinations3.filter {
+//                                    !selectedPlanetMap.filterKeys { it != 2 }.map { it.value?.name }
+//                                        .contains(it.name)
+//                                }
+//                            },
+//                            onSearch = {
+//                                falconeViewModel.searchPlanets3(it)
+//                            },
+//                            onClick = {
+//                                falconeViewModel.setPlanet(2, it)
+//                            }, hintText = "Destination 3"
+//                        )
+                        PlanetSelectionBottomSheet(
                             selectedItem = selectedPlanetMap[2],
                             list = {
                                 destinations3.filter {
@@ -300,8 +348,23 @@ fun FindFalcone(
 
                             with(density) { (itemHeight * 2).toDp() }
                         }
-                        BaseExposedDropdown(
-                            modifier = Modifier.padding(bottom = 8.dp),
+//                        BaseExposedDropdown(
+//                            modifier = Modifier.padding(bottom = 8.dp),
+//                            selectedItem = selectedPlanetMap[3],
+//                            list = {
+//                                destinations4.filter {
+//                                    !selectedPlanetMap.filterKeys { it != 3 }.map { it.value?.name }
+//                                        .contains(it.name)
+//                                }
+//                            },
+//                            onSearch = {
+//                                falconeViewModel.searchPlanets4(it)
+//                            },
+//                            onClick = {
+//                                falconeViewModel.setPlanet(3, it)
+//                            }, hintText = "Destination 4"
+//                        )
+                        PlanetSelectionBottomSheet(
                             selectedItem = selectedPlanetMap[3],
                             list = {
                                 destinations4.filter {
@@ -346,16 +409,26 @@ fun FindFalcone(
                             //Call Api
                             findFalcone()
                         }) {
-                        Text(text = "Find Falcone")
+                        Text(text = "Find Falcone 🚀")
                     }
                 }
             }
         if (uiState is UIError) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Button(onClick = {
-                    falconeViewModel.fetchDetails()
-                }) {
-                    Text(text = "Try Again")
+            Box(modifier = Modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center) {
+                    Text(text = "Uh-oh! It seems Falcone's cunning has disrupted our connection. King Shan's radar is offline, but we'll keep searching!",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Medium)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Button(
+                        shape = MaterialTheme.shapes.small,
+                        onClick = {
+                        falconeViewModel.fetchDetails()
+                    }) {
+                        Text(text = "Try Again")
+                    }
                 }
             }
         }
@@ -394,7 +467,7 @@ fun VehicleOptions(
             }
         }
     else
-        Row {
+        Row(modifier = Modifier.padding(vertical = 8.dp)) {
             vehicles.forEach {
                 VehicleRadioButton(
                     modifier = Modifier
