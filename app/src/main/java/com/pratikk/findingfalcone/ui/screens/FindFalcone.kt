@@ -42,10 +42,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.pratikk.findingfalcone.data.planets.model.Planet
@@ -76,7 +78,6 @@ fun FindFalcone(
     val uiState: UIState by falconeViewModel.uiState.collectAsState()
     val localConfiguration = LocalConfiguration.current
     LaunchedEffect(key1 = uiState, block = {
-        println(uiState)
         if (uiState.isUIError)
             mainViewModel.snackBarHost.showSnackbar((uiState as UIError).error.toString())
     })
@@ -109,36 +110,42 @@ fun FindFalcone(
                                 .background(color = MaterialTheme.colorScheme.background)
                                 .animateContentSize()
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(vertical = 10.dp),
-                                    text = "Total Time ${falconeViewModel.totalTime.value}",
+                            Column {
+                                Text(modifier = Modifier.fillMaxWidth(),
+                                    text = "Select planets to search in",
                                     style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                if (selectedPlanetMap.isNotEmpty())
-                                    OutlinedButton(
-                                        shape = MaterialTheme.shapes.small,
-                                        onClick = {
-                                            falconeViewModel.resetInput()
-                                        }) {
-                                        Text(text = "Reset")
-                                    }
-                                if (localConfiguration.orientation != Configuration.ORIENTATION_PORTRAIT && !keyboardVisible)
-                                    Button(
+                                    textAlign = TextAlign.Center)
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
                                         modifier = Modifier
-                                            .padding(horizontal = 8.dp),
-                                        enabled = selectedPlanetMap.size == 4 && selectedVehicleMap.size == 4,
-                                        shape = MaterialTheme.shapes.small,
-                                        onClick = {
-                                            //Call Api
-                                            findFalcone()
-                                        }) {
-                                        Text(text = "Find Falcone")
-                                    }
+                                            .weight(1f)
+                                            .padding(vertical = 10.dp),
+                                        text = "Total Time ${falconeViewModel.totalTime.value}",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                    if (selectedPlanetMap.isNotEmpty())
+                                        OutlinedButton(
+                                            shape = MaterialTheme.shapes.small,
+                                            onClick = {
+                                                falconeViewModel.resetInput()
+                                            }) {
+                                            Text(text = "Reset")
+                                        }
+                                    if (localConfiguration.orientation != Configuration.ORIENTATION_PORTRAIT && !keyboardVisible)
+                                        Button(
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp),
+                                            enabled = selectedPlanetMap.size == 4 && selectedVehicleMap.size == 4,
+                                            shape = MaterialTheme.shapes.small,
+                                            onClick = {
+                                                //Call Api
+                                                findFalcone()
+                                            }) {
+                                            Text(text = "Find Falcone")
+                                        }
+                                }
                             }
                         }
                     }
@@ -326,12 +333,11 @@ fun FindFalcone(
                             Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
-                if (localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT && !keyboardVisible)
+                if (localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT && !keyboardVisible) {
                     Button(
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
-                            .padding(8.dp)
-                            .background(color = MaterialTheme.colorScheme.background)
+                            .clip(MaterialTheme.shapes.small)
                             .align(Alignment.BottomCenter),
                         enabled = selectedPlanetMap.size == 4 && selectedVehicleMap.size == 4,
                         shape = MaterialTheme.shapes.small,
@@ -341,6 +347,7 @@ fun FindFalcone(
                         }) {
                         Text(text = "Find Falcone")
                     }
+                }
             }
         if (uiState is UIError) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

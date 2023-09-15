@@ -10,7 +10,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -61,7 +65,7 @@ class MainActivity : ComponentActivity() {
                             val title by remember(currentDestination) {
                                 derivedStateOf {
                                     when(currentDestination?.destination?.route){
-                                        Routes.FIND_FALCONE -> "Finding Falcon!"
+                                        Routes.FIND_FALCONE,Routes.FIND_FALCONE_RESULT -> "Finding Falcon!"
                                         else -> ""
                                     }
                                 }
@@ -77,7 +81,15 @@ class MainActivity : ComponentActivity() {
                                 },
                                 colors = TopAppBarDefaults.smallTopAppBarColors(
                                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                                )
+                                ),
+                                navigationIcon = {
+                                    IconButton(onClick = { navController.popBackStack() }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.ArrowBack,
+                                            contentDescription = "Back"
+                                        )
+                                    }
+                                }
                             )
                         }
                     }) {

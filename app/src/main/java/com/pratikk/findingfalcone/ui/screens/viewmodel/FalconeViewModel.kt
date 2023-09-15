@@ -151,6 +151,8 @@ class FalconeViewModel : ViewModel() {
 
     fun setPlanet(idx: Int, planet: Planet) {
         selectedPlanetMap[idx] = planet
+        selectedVehiclesMap.remove(idx)
+        refreshRadioButton()
     }
 
     fun setVehicle(idx: Int, vehicle: Vehicle) {
