@@ -12,6 +12,7 @@ List the key features of your Android app.
 - Material 3 UI
 - MVVM architecture for organized and testable code.
 - Lifecycle-aware components to ensure seamless user interactions even during configuration changes.
+- Core libraries used for networking and parsing json
 
 ## Prerequisites
 **Android Studio:** Make sure you have Android Studio installed on your computer. You can download it from the [official Android Studio website](https://developer.android.com/studio).
