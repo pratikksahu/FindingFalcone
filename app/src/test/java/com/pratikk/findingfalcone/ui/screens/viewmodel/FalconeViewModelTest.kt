@@ -1,6 +1,5 @@
 package com.pratikk.findingfalcone.ui.screens.viewmodel
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
 import com.pratikk.findingfalcone.data.core.model.ApiError
 import com.pratikk.findingfalcone.data.core.model.ApiSuccess
@@ -13,22 +12,17 @@ import com.pratikk.findingfalcone.ui.screens.common.UILoading
 import com.pratikk.findingfalcone.ui.screens.common.UISuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TestRule
 import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 
 class FalconeViewModelTest {
@@ -187,6 +181,7 @@ class FalconeViewModelTest {
         jobB.cancel()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @After
     fun tearDown() {
         Dispatchers.resetMain()

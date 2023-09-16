@@ -13,8 +13,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
-class GetVehiclesRepository {
-    val networkHelper = NetworkModule()
+class GetVehiclesRepository(val networkHelper:NetworkModule = NetworkModule()) {
     suspend fun getVehicles(): ApiResult<List<Vehicle>> = coroutineScope {
         withContext(Dispatchers.IO) {
             val request = Request<Vehicle>("vehicles", REQ_TYPE.GET)

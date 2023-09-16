@@ -13,8 +13,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
-class GetPlanetsRepository {
-    val networkHelper = NetworkModule()
+class GetPlanetsRepository constructor(val networkHelper:NetworkModule = NetworkModule()) {
     suspend fun getPlanets():ApiResult<List<Planet>> = coroutineScope{
         withContext(Dispatchers.IO){
             val request = Request<Planet>("planets",REQ_TYPE.GET)

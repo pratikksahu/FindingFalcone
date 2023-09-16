@@ -8,8 +8,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
-class FalconeTokenRepository {
-    val networkHelper = NetworkModule()
+class FalconeTokenRepository constructor(val networkHelper:NetworkModule = NetworkModule()) {
     suspend fun getToken(): ApiResult<String> = coroutineScope{
         withContext(Dispatchers.IO) {
             val req = Request<String>(path = "token", type = REQ_TYPE.POST)
