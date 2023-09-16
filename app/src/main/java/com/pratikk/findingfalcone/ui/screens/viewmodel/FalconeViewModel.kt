@@ -61,37 +61,32 @@ class FalconeViewModel constructor(
     fun fetchDetails() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.emit(UILoading)
-            val res = awaitAll(getPlanets(), getVehicles())
-            if (res.any { it.isApiError }) {
-                _uiState.emit(UIError((res.first { it.isApiError } as ApiError).error))
-            } else {
+            val planetsRes = getPlanets()
+            val vehiclesRes = getVehicles()
+            if(planetsRes is ApiError){
+                _uiState.emit(UIError((planetsRes.error)))
+            }else if(vehiclesRes is ApiError){
+                _uiState.emit(UIError((vehiclesRes.error)))
+            }else{
                 _uiState.emit(UISuccess)
             }
         }
     }
 
     private suspend fun getPlanets() = coroutineScope {
-        async(this.coroutineContext) {
-            getPlanetsRepository.getPlanets().onSuccess {
-                _planet.emit(it)
-                _planet1.emit(it)
-                _planet2.emit(it)
-                _planet3.emit(it)
-                _planet4.emit(it)
-            }.onError {
-
-            }
+        return@coroutineScope getPlanetsRepository.getPlanets().onSuccess {
+            _planet.emit(it)
+            _planet1.emit(it)
+            _planet2.emit(it)
+            _planet3.emit(it)
+            _planet4.emit(it)
         }
     }
 
     private suspend fun getVehicles() = coroutineScope {
-        async(this.coroutineContext) {
-            getVehiclesRepository.getVehicles().onSuccess {
-                _vehicle.emit(it)
-                _selectedVehicle.emit(it)
-            }.onError {
-
-            }
+        return@coroutineScope getVehiclesRepository.getVehicles().onSuccess {
+            _vehicle.emit(it)
+            _selectedVehicle.emit(it)
         }
     }
 

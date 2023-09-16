@@ -18,6 +18,7 @@ import com.pratikk.findingfalcone.ui.screens.common.UILoading
 import com.pratikk.findingfalcone.ui.screens.common.UIState
 import com.pratikk.findingfalcone.ui.screens.common.UISuccess
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -37,11 +38,11 @@ class FalconeResultViewModel(
 
     fun getFaclonResult(planets: List<Planet>, vehicles: List<Vehicle>) {
         viewModelScope.launch(Dispatchers.IO) {
+            _uiState.emit(UILoading)
             if (_planets.value.isEmpty()) {
                 _planets.emit(planets)
                 _vehicles.emit(vehicles)
             }
-            _uiState.emit(UILoading)
             val token = falconeTokenRepository.getToken()
             if (token is ApiError) {
                 _uiState.emit(UIError(token.error))

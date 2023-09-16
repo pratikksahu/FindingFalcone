@@ -67,7 +67,15 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    //Coroutine
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    //Core
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    //Flows
+    testImplementation("app.cash.turbine:turbine:1.0.0")
+    //Junit Mockito and Mockito Kotlin
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
+    testImplementation("org.mockito:mockito-core:5.3.1")
     //Navigation
     implementation("androidx.navigation:navigation-compose:2.7.2")
     //Font
