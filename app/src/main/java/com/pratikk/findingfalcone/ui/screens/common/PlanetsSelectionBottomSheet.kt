@@ -22,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,8 +97,12 @@ fun PlanetSelectionBottomSheet(
             )
         )
     }
-
-
+    LaunchedEffect(key1 = sheetOpen, block = {
+        if(!sheetOpen){
+            searchParam = ""
+            onSearch("")
+        }
+    })
     if (sheetOpen)
         ModalBottomSheet(
             modifier = Modifier.navigationBarsPadding(),
@@ -122,7 +127,8 @@ fun PlanetSelectionBottomSheet(
                     },
                     label = {
                         Text(text = "Search", maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    }, keyboardOptions = KeyboardOptions.Default.copy(
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     )

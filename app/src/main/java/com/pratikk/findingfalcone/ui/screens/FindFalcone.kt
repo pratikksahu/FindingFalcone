@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSizeIn
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -28,7 +27,6 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -54,7 +52,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.pratikk.findingfalcone.data.planets.model.Planet
 import com.pratikk.findingfalcone.data.vehicles.model.Vehicle
-import com.pratikk.findingfalcone.ui.screens.common.BaseExposedDropdown
 import com.pratikk.findingfalcone.ui.screens.common.PlanetSelectionBottomSheet
 import com.pratikk.findingfalcone.ui.screens.common.UIError
 import com.pratikk.findingfalcone.ui.screens.common.UILoading
@@ -106,293 +103,212 @@ fun FindFalcone(
                         .padding(20.dp)
                         .animateContentSize()
                 ) {
-                    stickyHeader {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = MaterialTheme.colorScheme.background)
-                                .animateContentSize()
-                        ) {
-                            Column {
-                                Text(modifier = Modifier.fillMaxWidth(),
-                                    text = "Planetary Exploration Choices 🪐",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Medium,
-                                    textAlign = TextAlign.Center)
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
+                        stickyHeader {
+                            val density = LocalDensity.current
+                            var itemHeight by remember {
+                                mutableStateOf(0)
+                            }
+                            val maxHeight = remember(itemHeight) {
+                                if (itemHeight == 0)
+                                    return@remember 200.dp
+
+                                with(density) { (itemHeight * 2).toDp() }
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(color = MaterialTheme.colorScheme.background)
+                                    .animateContentSize()
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(
                                         modifier = Modifier
-                                            .weight(1f)
-                                            .padding(vertical = 20.dp),
-                                        text = "Total Time : ${falconeViewModel.totalTime.value}",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.Medium
+                                            .fillMaxWidth()
+                                            .padding(bottom = 10.dp),
+                                        text = "Available Crafts 🛸",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Medium,
+                                        textAlign = TextAlign.Center
                                     )
-
-                                    if (selectedPlanetMap.isNotEmpty())
-                                        TextButton(
-                                            shape = MaterialTheme.shapes.small,
-                                            onClick = {
-                                                falconeViewModel.resetInput()
-                                            }) {
-                                            Text(text = "Reset")
-                                        }
-                                    if (localConfiguration.orientation != Configuration.ORIENTATION_PORTRAIT && !keyboardVisible)
-                                        Button(
+                                    AvailableVehicles(
+                                        modifier = Modifier.requiredSizeIn(maxHeight = maxHeight),
+                                        vehicles = vehicles,
+                                        onSizeChanged = {
+                                            itemHeight = it.height
+                                        })
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
                                             modifier = Modifier
-                                                .padding(horizontal = 8.dp),
-                                            enabled = selectedPlanetMap.size == 4 && selectedVehicleMap.size == 4,
-                                            shape = MaterialTheme.shapes.small,
-                                            onClick = {
-                                                //Call Api
-                                                findFalcone()
-                                            }) {
-                                            Text(text = "Find Falcone 🚀")
-                                        }
+                                                .weight(1f)
+                                                .padding(vertical = 20.dp),
+                                            text = "Total Time : ${falconeViewModel.totalTime.value}",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = FontWeight.Medium
+                                        )
+
+                                        if (selectedPlanetMap.isNotEmpty())
+                                            TextButton(
+                                                shape = MaterialTheme.shapes.small,
+                                                onClick = {
+                                                    falconeViewModel.resetInput()
+                                                }) {
+                                                Text(text = "Reset")
+                                            }
+                                        if (localConfiguration.orientation != Configuration.ORIENTATION_PORTRAIT && !keyboardVisible)
+                                            Button(
+                                                modifier = Modifier
+                                                    .padding(horizontal = 8.dp),
+                                                enabled = selectedPlanetMap.size == 4 && selectedVehicleMap.size == 4,
+                                                shape = MaterialTheme.shapes.small,
+                                                onClick = {
+                                                    //Call Api
+                                                    findFalcone()
+                                                }) {
+                                                Text(text = "Find Falcone 🚀")
+                                            }
+                                    }
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 10.dp),
+                                        text = "Planetary Exploration Choices 🪐",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Medium,
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
                             }
                         }
-                    }
-                    item {
-                        val showVehicles by remember(selectedPlanetMap[0]) {
-                            derivedStateOf { selectedPlanetMap[0] != null }
-                        }
-                        val density = LocalDensity.current
-                        var itemHeight by remember {
-                            mutableStateOf(0)
-                        }
-                        val maxHeight = remember(itemHeight) {
-                            if (itemHeight == 0)
-                                return@remember 200.dp
+                    else
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(color = MaterialTheme.colorScheme.background)
+                                    .animateContentSize()
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 10.dp),
+                                        text = "Available Crafts 🛸",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Medium,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    AvailableVehicles(
+                                        modifier = Modifier,
+                                        vehicles = vehicles,
+                                        onSizeChanged = {
+                                        })
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(vertical = 20.dp),
+                                            text = "Total Time : ${falconeViewModel.totalTime.value}",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            fontWeight = FontWeight.Medium
+                                        )
 
-                            with(density) { (itemHeight * 2).toDp() }
-                        }
-//                        BaseExposedDropdown(
-//                            modifier = Modifier.padding(bottom = 8.dp),
-//                            selectedItem = selectedPlanetMap[0],
-//                            list = {
-//                                destinations1.filter {
-//                                    !selectedPlanetMap.filterKeys { it != 0 }.map { it.value?.name }
-//                                        .contains(it.name)
-//                                }
-//                            },
-//                            onSearch = {
-//                                falconeViewModel.searchPlanets1(it)
-//                            },
-//                            onClick = {
-//                                falconeViewModel.setPlanet(0, it)
-//                            }, hintText = "Destination 1"
-//                        )
-                        PlanetSelectionBottomSheet(
-                            selectedItem = selectedPlanetMap[0],
-                            list = {
-                                destinations1.filter {
-                                    !selectedPlanetMap.filterKeys { it != 0 }.map { it.value.name }
-                                        .contains(it.name)
+                                        if (selectedPlanetMap.isNotEmpty())
+                                            TextButton(
+                                                shape = MaterialTheme.shapes.small,
+                                                onClick = {
+                                                    falconeViewModel.resetInput()
+                                                }) {
+                                                Text(text = "Reset")
+                                            }
+                                        if (!keyboardVisible)
+                                            Button(
+                                                modifier = Modifier
+                                                    .padding(horizontal = 8.dp),
+                                                enabled = selectedPlanetMap.size == 4 && selectedVehicleMap.size == 4,
+                                                shape = MaterialTheme.shapes.small,
+                                                onClick = {
+                                                    //Call Api
+                                                    findFalcone()
+                                                }) {
+                                                Text(text = "Find Falcone 🚀")
+                                            }
+                                    }
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 10.dp),
+                                        text = "Planetary Exploration Choices 🪐",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Medium,
+                                        textAlign = TextAlign.Center
+                                    )
                                 }
-                            },
+                            }
+                        }
+                    item {
+                        DestinationItem(
+                            selectedPlanetMap = selectedPlanetMap,
+                            selectedVehicleMap = selectedVehicleMap,
+                            vehicles = vehicles,
+                            destinations = destinations1,
+                            destinationIdx = 0,
                             onSearch = {
                                 falconeViewModel.searchPlanets1(it)
-                            },
-                            onClick = {
+                            }, onPlanetClick = {
                                 falconeViewModel.setPlanet(0, it)
-                            }, hintText = "Destination 1"
+                            }, onVehicleClick = {
+                                falconeViewModel.setVehicle(0, it)
+                            }
                         )
-                        if (showVehicles)
-                            VehicleOptions(
-                                modifier = Modifier.requiredSizeIn(maxHeight = maxHeight),
-                                idx = 0,
-                                vehicles = vehicles,
-                                selectedVehicleMap = selectedVehicleMap,
-                                selectedPlanetMap = selectedPlanetMap,
-                                onSizeChanged = {
-                                    itemHeight = it.height
-                                },
-                                onClick = {
-                                    falconeViewModel.setVehicle(0, it)
-                                }
-                            )
-
                     }
                     item {
-                        val showVehicles by remember(selectedPlanetMap[1]) {
-                            derivedStateOf { selectedPlanetMap[1] != null }
-                        }
-                        val density = LocalDensity.current
-                        var itemHeight by remember {
-                            mutableStateOf(0)
-                        }
-                        val maxHeight = remember(itemHeight) {
-                            if (itemHeight == 0)
-                                return@remember 200.dp
-
-                            with(density) { (itemHeight * 2).toDp() }
-                        }
-//                        BaseExposedDropdown(
-//                            modifier = Modifier.padding(bottom = 8.dp),
-//                            selectedItem = selectedPlanetMap[1],
-//                            list = {
-//                                destinations2.filter {
-//                                    !selectedPlanetMap.filterKeys { it != 1 }.map { it.value?.name }
-//                                        .contains(it.name)
-//                                }
-//                            },
-//                            onSearch = {
-//                                falconeViewModel.searchPlanets2(it)
-//                            },
-//                            onClick = {
-//                                falconeViewModel.setPlanet(1, it)
-//                            }, hintText = "Destination 2"
-//                        )
-                        PlanetSelectionBottomSheet(
-                            selectedItem = selectedPlanetMap[1],
-                            list = {
-                                destinations2.filter {
-                                    !selectedPlanetMap.filterKeys { it != 1 }.map { it.value?.name }
-                                        .contains(it.name)
-                                }
-                            },
+                        DestinationItem(
+                            selectedPlanetMap = selectedPlanetMap,
+                            selectedVehicleMap = selectedVehicleMap,
+                            vehicles = vehicles,
+                            destinations = destinations2,
+                            destinationIdx = 1,
                             onSearch = {
                                 falconeViewModel.searchPlanets2(it)
-                            },
-                            onClick = {
+                            }, onPlanetClick = {
                                 falconeViewModel.setPlanet(1, it)
-                            }, hintText = "Destination 2"
+                            }, onVehicleClick = {
+                                falconeViewModel.setVehicle(1, it)
+                            }
                         )
-                        if (showVehicles)
-                            VehicleOptions(
-                                modifier = Modifier.requiredSizeIn(maxHeight = maxHeight),
-                                idx = 1,
-                                vehicles = vehicles,
-                                selectedVehicleMap = selectedVehicleMap,
-                                selectedPlanetMap = selectedPlanetMap,
-                                onSizeChanged = {
-                                    itemHeight = it.height
-                                },
-                                onClick = {
-                                    falconeViewModel.setVehicle(1, it)
-                                }
-                            )
                     }
                     item {
-                        val showVehicles by remember(selectedPlanetMap[2]) {
-                            derivedStateOf { selectedPlanetMap[2] != null }
-                        }
-                        val density = LocalDensity.current
-                        var itemHeight by remember {
-                            mutableStateOf(0)
-                        }
-                        val maxHeight = remember(itemHeight) {
-                            if (itemHeight == 0)
-                                return@remember 200.dp
-
-                            with(density) { (itemHeight * 2).toDp() }
-                        }
-//                        BaseExposedDropdown(
-//                            modifier = Modifier.padding(bottom = 8.dp),
-//                            selectedItem = selectedPlanetMap[2],
-//                            list = {
-//                                destinations3.filter {
-//                                    !selectedPlanetMap.filterKeys { it != 2 }.map { it.value?.name }
-//                                        .contains(it.name)
-//                                }
-//                            },
-//                            onSearch = {
-//                                falconeViewModel.searchPlanets3(it)
-//                            },
-//                            onClick = {
-//                                falconeViewModel.setPlanet(2, it)
-//                            }, hintText = "Destination 3"
-//                        )
-                        PlanetSelectionBottomSheet(
-                            selectedItem = selectedPlanetMap[2],
-                            list = {
-                                destinations3.filter {
-                                    !selectedPlanetMap.filterKeys { it != 2 }.map { it.value?.name }
-                                        .contains(it.name)
-                                }
-                            },
+                        DestinationItem(
+                            selectedPlanetMap = selectedPlanetMap,
+                            selectedVehicleMap = selectedVehicleMap,
+                            vehicles = vehicles,
+                            destinations = destinations3,
+                            destinationIdx = 2,
                             onSearch = {
                                 falconeViewModel.searchPlanets3(it)
-                            },
-                            onClick = {
+                            }, onPlanetClick = {
                                 falconeViewModel.setPlanet(2, it)
-                            }, hintText = "Destination 3"
+                            }, onVehicleClick = {
+                                falconeViewModel.setVehicle(2, it)
+                            }
                         )
-                        if (showVehicles)
-                            VehicleOptions(
-                                modifier = Modifier.requiredSizeIn(maxHeight = maxHeight),
-                                idx = 2,
-                                vehicles = vehicles,
-                                selectedVehicleMap = selectedVehicleMap,
-                                selectedPlanetMap = selectedPlanetMap,
-                                onSizeChanged = {
-                                    itemHeight = it.height
-                                },
-                                onClick = {
-                                    falconeViewModel.setVehicle(2, it)
-                                }
-                            )
                     }
                     item {
-                        val showVehicles by remember(selectedPlanetMap[3]) {
-                            derivedStateOf { selectedPlanetMap[3] != null }
-                        }
-                        val density = LocalDensity.current
-                        var itemHeight by remember {
-                            mutableStateOf(0)
-                        }
-                        val maxHeight = remember(itemHeight) {
-                            if (itemHeight == 0)
-                                return@remember 200.dp
-
-                            with(density) { (itemHeight * 2).toDp() }
-                        }
-//                        BaseExposedDropdown(
-//                            modifier = Modifier.padding(bottom = 8.dp),
-//                            selectedItem = selectedPlanetMap[3],
-//                            list = {
-//                                destinations4.filter {
-//                                    !selectedPlanetMap.filterKeys { it != 3 }.map { it.value?.name }
-//                                        .contains(it.name)
-//                                }
-//                            },
-//                            onSearch = {
-//                                falconeViewModel.searchPlanets4(it)
-//                            },
-//                            onClick = {
-//                                falconeViewModel.setPlanet(3, it)
-//                            }, hintText = "Destination 4"
-//                        )
-                        PlanetSelectionBottomSheet(
-                            selectedItem = selectedPlanetMap[3],
-                            list = {
-                                destinations4.filter {
-                                    !selectedPlanetMap.filterKeys { it != 3 }.map { it.value?.name }
-                                        .contains(it.name)
-                                }
-                            },
+                        DestinationItem(
+                            selectedPlanetMap = selectedPlanetMap,
+                            selectedVehicleMap = selectedVehicleMap,
+                            vehicles = vehicles,
+                            destinations = destinations4,
+                            destinationIdx = 3,
                             onSearch = {
                                 falconeViewModel.searchPlanets4(it)
-                            },
-                            onClick = {
+                            }, onPlanetClick = {
                                 falconeViewModel.setPlanet(3, it)
-                            }, hintText = "Destination 4"
+                            }, onVehicleClick = {
+                                falconeViewModel.setVehicle(3, it)
+                            }
                         )
-                        if (showVehicles)
-                            VehicleOptions(
-                                modifier = Modifier.requiredSizeIn(maxHeight = maxHeight),
-                                idx = 3,
-                                vehicles = vehicles,
-                                selectedVehicleMap = selectedVehicleMap,
-                                selectedPlanetMap = selectedPlanetMap,
-                                onSizeChanged = {
-                                    itemHeight = it.height
-                                },
-                                onClick = {
-                                    falconeViewModel.setVehicle(3, it)
-                                }
-                            )
                         if (localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
                             Spacer(modifier = Modifier.height(100.dp))
                     }
@@ -414,19 +330,28 @@ fun FindFalcone(
                 }
             }
         if (uiState is UIError) {
-            Box(modifier = Modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center) {
-                    Text(text = "Uh-oh! It seems Falcone's cunning has disrupted our connection. King Shan's radar is offline, but we'll keep searching!",
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Uh-oh! It seems Falcone's cunning has disrupted our connection. King Shan's radar is offline, but we'll keep searching!",
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Medium)
+                        fontWeight = FontWeight.Medium
+                    )
                     Spacer(modifier = Modifier.height(20.dp))
                     Button(
                         shape = MaterialTheme.shapes.small,
                         onClick = {
-                        falconeViewModel.fetchDetails()
-                    }) {
+                            falconeViewModel.fetchDetails()
+                        }) {
                         Text(text = "Try Again")
                     }
                 }
@@ -436,6 +361,71 @@ fun FindFalcone(
     SideEffect {
         composableLoaded = true
     }
+}
+
+@Composable
+fun DestinationItem(
+    selectedPlanetMap: SnapshotStateMap<Int, Planet>,
+    selectedVehicleMap: SnapshotStateMap<Int, Vehicle>,
+    vehicles:List<Vehicle>,
+    destinations: List<Planet>,
+    destinationIdx:Int,
+    onSearch:(String) -> Unit,
+    onPlanetClick: (Planet) -> Unit,
+    onVehicleClick: (Vehicle) -> Unit
+) {
+    val showVehicles by remember(selectedPlanetMap[destinationIdx]) {
+        derivedStateOf { selectedPlanetMap[destinationIdx] != null }
+    }
+    val density = LocalDensity.current
+    var itemHeight by remember {
+        mutableStateOf(0)
+    }
+    val maxHeight = remember(itemHeight) {
+        if (itemHeight == 0)
+            return@remember 200.dp
+
+        with(density) { (itemHeight * 2).toDp() }
+    }
+//                        BaseExposedDropdown(
+//                            modifier = Modifier.padding(bottom = 8.dp),
+//                            selectedItem = selectedPlanetMap[destinationIdx],
+//                            list = {
+//                                destinations1.filter {
+//                                    !selectedPlanetMap.filterKeys { it != destinationIdx }.map { it.value?.name }
+//                                        .contains(it.name)
+//                                }
+//                            },
+//                            onSearch = {
+//                                falconeViewModel.searchPlanets1(it)
+//                            },
+//                            onClick = {
+//                                falconeViewModel.setPlanet(0, it)
+//                            }, hintText = hintText
+//                        )
+    PlanetSelectionBottomSheet(
+        selectedItem = selectedPlanetMap[destinationIdx],
+        list = {
+            destinations.filter {
+                !selectedPlanetMap.filterKeys { it != destinationIdx }.map { it.value.name }
+                    .contains(it.name)
+            }
+        },
+        onSearch = onSearch,
+        onClick = onPlanetClick, hintText = "Destination ${destinationIdx + 1}"
+    )
+    if (showVehicles)
+        VehicleOptions(
+            modifier = Modifier.requiredSizeIn(maxHeight = maxHeight),
+            idx = destinationIdx,
+            vehicles = vehicles,
+            selectedVehicleMap = selectedVehicleMap,
+            selectedPlanetMap = selectedPlanetMap,
+            onSizeChanged = {
+                itemHeight = it.height
+            },
+            onClick = onVehicleClick
+        )
 }
 
 @Composable
@@ -457,6 +447,7 @@ fun VehicleOptions(
             items(vehicles) {
                 VehicleRadioButton(
                     modifier = Modifier
+                        .wrapContentSize()
                         .onSizeChanged {
                             onSizeChanged(it)
                         },
@@ -505,11 +496,66 @@ fun VehicleRadioButton(
             enabled = isEnabled,
             onClick = onClick
         )
+        Text(
+            text = item.name,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun AvailableVehicles(
+    modifier: Modifier,
+    vehicles: List<Vehicle>,
+    onSizeChanged: (IntSize) -> Unit,
+) {
+    val localConfiguration = LocalConfiguration.current
+    if (localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
+        LazyHorizontalGrid(
+            modifier = modifier,
+            rows = GridCells.Fixed(2)
+        ) {
+            items(vehicles) {
+                VehicleInfoItem(
+                    modifier = Modifier
+                        .padding(horizontal = 40.dp)
+                        .wrapContentSize()
+                        .onSizeChanged {
+                            onSizeChanged(it)
+                        },
+                    item = it
+                )
+            }
+        }
+    else
+        Row(modifier = Modifier.padding(vertical = 8.dp)) {
+            vehicles.forEach {
+                VehicleInfoItem(
+                    modifier = Modifier
+                        .weight(1f),
+                    item = it
+                )
+            }
+
+        }
+}
+
+@Composable
+fun VehicleInfoItem(
+    modifier: Modifier = Modifier,
+    item: Vehicle
+) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Column {
             Text(
-                text = "${item.name} (${item.totalNo})",
-                style = MaterialTheme.typography.bodyMedium,
+                text = item.name,
+                style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Available : ${item.totalNo}",
+                style = MaterialTheme.typography.labelSmall
             )
             Text(
                 text = "Max Distance: ${item.maxDistance}",
@@ -519,6 +565,7 @@ fun VehicleRadioButton(
                 text = "Speed: ${item.speed}",
                 style = MaterialTheme.typography.labelSmall
             )
+            Spacer(modifier = Modifier.height(15.dp))
         }
     }
 }

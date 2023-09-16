@@ -91,9 +91,6 @@ class FalconeViewModel : ViewModel() {
 
     fun searchPlanets1(searchString: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            selectedPlanetMap.remove(0)
-            selectedVehiclesMap.remove(0)
-            refreshRadioButton()
             if (searchString.isNullOrEmpty()) {
                 _planet1.emit(_planet.value)
             } else {
@@ -106,9 +103,6 @@ class FalconeViewModel : ViewModel() {
 
     fun searchPlanets2(searchString: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            selectedPlanetMap.remove(1)
-            selectedVehiclesMap.remove(1)
-            refreshRadioButton()
             if (searchString.isNullOrEmpty()) {
                 _planet2.emit(_planet.value)
             } else {
@@ -121,9 +115,6 @@ class FalconeViewModel : ViewModel() {
 
     fun searchPlanets3(searchString: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            selectedPlanetMap.remove(2)
-            selectedVehiclesMap.remove(2)
-            refreshRadioButton()
             if (searchString.isNullOrEmpty()) {
                 _planet3.emit(_planet.value)
             } else {
@@ -136,9 +127,6 @@ class FalconeViewModel : ViewModel() {
 
     fun searchPlanets4(searchString: String?) {
         viewModelScope.launch(Dispatchers.IO) {
-            selectedPlanetMap.remove(3)
-            selectedVehiclesMap.remove(3)
-            refreshRadioButton()
             if (searchString.isNullOrEmpty()) {
                 _planet4.emit(_planet.value)
             } else {
