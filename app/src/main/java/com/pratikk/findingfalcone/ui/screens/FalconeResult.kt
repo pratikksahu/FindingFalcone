@@ -11,13 +11,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,22 +29,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.pratikk.findingfalcone.ui.screens.common.UIError
 import com.pratikk.findingfalcone.ui.screens.common.UILoading
 import com.pratikk.findingfalcone.ui.screens.common.UIState
 import com.pratikk.findingfalcone.ui.screens.common.UISuccess
 import com.pratikk.findingfalcone.ui.screens.viewmodel.FalconeResultViewModel
-import com.pratikk.findingfalcone.ui.screens.viewmodel.MainViewModel
 
 @Composable
 fun FalconeResult(
-    mainViewModel: MainViewModel,
+    snackbarHostState: SnackbarHostState,
     falconeResultViewModel: FalconeResultViewModel,
     startAgain:() -> Unit
 ) {
@@ -52,7 +48,7 @@ fun FalconeResult(
     val falconResponse by falconeResultViewModel.falconeResponse.collectAsState()
     LaunchedEffect(key1 = uiState, block = {
         if (uiState.isUIError)
-            mainViewModel.snackBarHost.showSnackbar((uiState as UIError).error.toString())
+            snackbarHostState.showSnackbar((uiState as UIError).error.toString())
     })
     var composableLoaded by remember {
         mutableStateOf(false)

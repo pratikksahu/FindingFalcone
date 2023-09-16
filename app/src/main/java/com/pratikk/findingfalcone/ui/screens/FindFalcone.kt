@@ -28,6 +28,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -59,12 +60,11 @@ import com.pratikk.findingfalcone.ui.screens.common.UIState
 import com.pratikk.findingfalcone.ui.screens.common.UISuccess
 import com.pratikk.findingfalcone.ui.screens.common.keyboardAsState
 import com.pratikk.findingfalcone.ui.screens.viewmodel.FalconeViewModel
-import com.pratikk.findingfalcone.ui.screens.viewmodel.MainViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FindFalcone(
-    mainViewModel: MainViewModel,
+    snackbarHostState:SnackbarHostState,
     falconeViewModel: FalconeViewModel,
     findFalcone: () -> Unit = {}
 ) {
@@ -79,7 +79,7 @@ fun FindFalcone(
     val localConfiguration = LocalConfiguration.current
     LaunchedEffect(key1 = uiState, block = {
         if (uiState.isUIError)
-            mainViewModel.snackBarHost.showSnackbar((uiState as UIError).error.toString())
+            snackbarHostState.showSnackbar((uiState as UIError).error.toString())
     })
     var composableLoaded by remember {
         mutableStateOf(false)

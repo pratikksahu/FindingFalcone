@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -25,19 +26,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.view.WindowCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.pratikk.findingfalcone.NavGraph.AppNavGraph
 import com.pratikk.findingfalcone.NavGraph.Routes
-import com.pratikk.findingfalcone.ui.screens.viewmodel.MainViewModel
 import com.pratikk.findingfalcone.ui.theme.FindingFalconeTheme
 
 class MainActivity : ComponentActivity() {
@@ -46,11 +43,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FindingFalconeTheme {
-                val falconeViewModel = viewModel<MainViewModel>()
+                val snackbarHostState = remember {
+                    SnackbarHostState()
+                }
                 val navController = rememberNavController()
                 val currentDestination by navController.currentBackStackEntryAsState()
                 Scaffold(snackbarHost = {
-                    SnackbarHost(hostState = falconeViewModel.snackBarHost)
+                    SnackbarHost(hostState = snackbarHostState)
                 },
                     topBar = {
                         AnimatedVisibility(
@@ -98,7 +97,7 @@ class MainActivity : ComponentActivity() {
                             .padding(it)
                             .background(color = MaterialTheme.colorScheme.background),
                         navController = navController,
-                        mainViewModel = falconeViewModel
+                        snackbarHostState = snackbarHostState
                     )
                 }
             }

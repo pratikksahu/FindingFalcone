@@ -1,6 +1,5 @@
 package com.pratikk.findingfalcone.data.findFalcone
 
-import com.pratikk.findingfalcone.data.core.FalconeTokenHelper
 import com.pratikk.findingfalcone.data.core.NetworkModule
 import com.pratikk.findingfalcone.data.core.REQ_TYPE
 import com.pratikk.findingfalcone.data.core.Request
@@ -11,13 +10,12 @@ import com.pratikk.findingfalcone.data.findFalcone.model.FalconeResponse
 import com.pratikk.findingfalcone.data.planets.model.Planet
 import com.pratikk.findingfalcone.data.vehicles.model.Vehicle
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 
-class GetFalconeResultService {
+class GetFalconeResultRepository {
     val networkHelper = NetworkModule()
     suspend fun getFalconeResult(
         planets: List<Planet>,

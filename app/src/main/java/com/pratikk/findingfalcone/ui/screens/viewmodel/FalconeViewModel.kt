@@ -3,13 +3,15 @@ package com.pratikk.findingfalcone.ui.screens.viewmodel
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.pratikk.findingfalcone.data.core.model.ApiError
 import com.pratikk.findingfalcone.data.core.model.onError
 import com.pratikk.findingfalcone.data.core.model.onSuccess
-import com.pratikk.findingfalcone.data.planets.GetPlanetsService
+import com.pratikk.findingfalcone.data.findFalcone.GetFalconeResultRepository
+import com.pratikk.findingfalcone.data.planets.GetPlanetsRepository
 import com.pratikk.findingfalcone.data.planets.model.Planet
-import com.pratikk.findingfalcone.data.vehicles.GetVehiclesService
+import com.pratikk.findingfalcone.data.vehicles.GetVehiclesRepository
 import com.pratikk.findingfalcone.data.vehicles.model.Vehicle
 import com.pratikk.findingfalcone.ui.screens.common.UIError
 import com.pratikk.findingfalcone.ui.screens.common.UILoading
@@ -23,7 +25,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class FalconeViewModel : ViewModel() {
+class FalconeViewModel constructor(
+    private val getPlanetsRepository: GetPlanetsRepository,
+    private val getVehiclesRepository: GetVehiclesRepository
+) : ViewModel() {
     private val _vehicle = MutableStateFlow<List<Vehicle>>(listOf())
     private val _selectedVehicle = MutableStateFlow<List<Vehicle>>(listOf())
     val vehicles = _selectedVehicle.asStateFlow()
@@ -48,17 +53,18 @@ class FalconeViewModel : ViewModel() {
     val selectedPlanetMap = mutableStateMapOf<Int, Planet>()
     val selectedVehiclesMap = mutableStateMapOf<Int, Vehicle>()
     var totalTime = mutableStateOf<Long>(0L)
+
     init {
         fetchDetails()
     }
 
-    fun fetchDetails(){
+    fun fetchDetails() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.emit(UILoading)
             val res = awaitAll(getPlanets(), getVehicles())
             if (res.any { it.isApiError }) {
                 _uiState.emit(UIError((res.first { it.isApiError } as ApiError).error))
-            }else{
+            } else {
                 _uiState.emit(UISuccess)
             }
         }
@@ -66,7 +72,7 @@ class FalconeViewModel : ViewModel() {
 
     private suspend fun getPlanets() = coroutineScope {
         async(this.coroutineContext) {
-            GetPlanetsService().getPlanets().onSuccess {
+            getPlanetsRepository.getPlanets().onSuccess {
                 _planet.emit(it)
                 _planet1.emit(it)
                 _planet2.emit(it)
@@ -80,7 +86,7 @@ class FalconeViewModel : ViewModel() {
 
     private suspend fun getVehicles() = coroutineScope {
         async(this.coroutineContext) {
-            GetVehiclesService().getVehicles().onSuccess {
+            getVehiclesRepository.getVehicles().onSuccess {
                 _vehicle.emit(it)
                 _selectedVehicle.emit(it)
             }.onError {
@@ -147,14 +153,14 @@ class FalconeViewModel : ViewModel() {
         if (selectedVehiclesMap.containsKey(idx)) {
             val veh = selectedVehiclesMap[idx]
             selectedVehiclesMap.remove(idx)
-            if(veh?.name != vehicle.name)
+            if (veh?.name != vehicle.name)
                 selectedVehiclesMap[idx] = vehicle.copy()
-        }
-        else
+        } else
             selectedVehiclesMap[idx] = vehicle.copy()
         refreshRadioButton()
     }
-    private fun refreshRadioButton(){
+
+    private fun refreshRadioButton() {
         viewModelScope.launch(Dispatchers.IO) {
             _selectedVehicle.emit(_vehicle.value.map { veh ->
                 veh.copy()
@@ -167,12 +173,13 @@ class FalconeViewModel : ViewModel() {
             }
         }
     }
-    fun resetInput(){
-        viewModelScope.launch(Dispatchers.IO){
-            _planet1.emit(buildList { addAll(_planet.value)})
-            _planet2.emit(buildList { addAll(_planet.value)})
-            _planet3.emit(buildList { addAll(_planet.value)})
-            _planet4.emit(buildList { addAll(_planet.value)})
+
+    fun resetInput() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _planet1.emit(buildList { addAll(_planet.value) })
+            _planet2.emit(buildList { addAll(_planet.value) })
+            _planet3.emit(buildList { addAll(_planet.value) })
+            _planet4.emit(buildList { addAll(_planet.value) })
             selectedPlanetMap.clear()
             selectedVehiclesMap.clear()
             _selectedVehicle.emit(_vehicle.value.map { veh ->
@@ -181,5 +188,13 @@ class FalconeViewModel : ViewModel() {
             })
             totalTime.value = 0
         }
+    }
+}
+
+class FalconeViewModelFactory(private val getPlanetsRepository: GetPlanetsRepository,
+                              private val getVehiclesRepository: GetVehiclesRepository) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return FalconeViewModel(getPlanetsRepository, getVehiclesRepository) as T
     }
 }
