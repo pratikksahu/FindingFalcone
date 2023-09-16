@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.pratikk.findingfalcone.data.core.FalconeTokenRepository
 import com.pratikk.findingfalcone.data.findFalcone.GetFalconeResultRepository
 import com.pratikk.findingfalcone.data.planets.GetPlanetsRepository
 import com.pratikk.findingfalcone.data.vehicles.GetVehiclesRepository
@@ -73,7 +74,10 @@ fun AppNavGraph(
             )
             val falconeResultViewModel = viewModel<FalconeResultViewModel>(
                 viewModelStoreOwner = backStackEntry,
-                factory = FalconeResultViewModelFactory(GetFalconeResultRepository())
+                factory = FalconeResultViewModelFactory(
+                    FalconeTokenRepository(),
+                    GetFalconeResultRepository()
+                )
             )
             FindFalcone(
                 snackbarHostState = snackbarHostState,

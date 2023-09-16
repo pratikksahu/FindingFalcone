@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.pratikk.findingfalcone.data.core.FalconeTokenHelper
+import com.pratikk.findingfalcone.data.core.FalconeTokenRepository
 import com.pratikk.findingfalcone.data.core.model.ApiError
 import com.pratikk.findingfalcone.data.core.model.ApiSuccess
 import com.pratikk.findingfalcone.data.core.model.onError
@@ -22,7 +22,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class FalconeResultViewModel(private val getFalconeResultRepository: GetFalconeResultRepository) :
+class FalconeResultViewModel(
+    private val falconeTokenRepository: FalconeTokenRepository,
+    private val getFalconeResultRepository: GetFalconeResultRepository) :
     ViewModel() {
     private val _uiState = MutableStateFlow<UIState>(UILoading)
     val uiState = _uiState.asStateFlow()
@@ -40,7 +42,7 @@ class FalconeResultViewModel(private val getFalconeResultRepository: GetFalconeR
                 _vehicles.emit(vehicles)
             }
             _uiState.emit(UILoading)
-            val token = FalconeTokenHelper().getToken()
+            val token = falconeTokenRepository.getToken()
             if (token is ApiError) {
                 _uiState.emit(UIError(token.error))
                 return@launch
@@ -67,9 +69,11 @@ class FalconeResultViewModel(private val getFalconeResultRepository: GetFalconeR
     }
 }
 
-class FalconeResultViewModelFactory(private val getFalconeResultRepository: GetFalconeResultRepository) :
+class FalconeResultViewModelFactory(
+    private val falconeTokenRepository: FalconeTokenRepository,
+    private val getFalconeResultRepository: GetFalconeResultRepository) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return FalconeResultViewModel(getFalconeResultRepository) as T
+        return FalconeResultViewModel(falconeTokenRepository,getFalconeResultRepository) as T
     }
 }

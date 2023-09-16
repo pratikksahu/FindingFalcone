@@ -67,10 +67,9 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
     //Navigation
     implementation("androidx.navigation:navigation-compose:2.7.2")
-    //Font
     //Font
     implementation("androidx.compose.ui:ui-text-google-fonts:1.5.1")
 }

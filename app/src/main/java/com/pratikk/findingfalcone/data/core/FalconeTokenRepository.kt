@@ -3,16 +3,12 @@ package com.pratikk.findingfalcone.data.core
 import com.pratikk.findingfalcone.data.core.model.ApiError
 import com.pratikk.findingfalcone.data.core.model.ApiResult
 import com.pratikk.findingfalcone.data.core.model.ApiSuccess
-import com.pratikk.findingfalcone.data.core.model.onError
-import com.pratikk.findingfalcone.data.core.model.onSuccess
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
-class FalconeTokenHelper {
+class FalconeTokenRepository {
     val networkHelper = NetworkModule()
     suspend fun getToken(): ApiResult<String> = coroutineScope{
         withContext(Dispatchers.IO) {
