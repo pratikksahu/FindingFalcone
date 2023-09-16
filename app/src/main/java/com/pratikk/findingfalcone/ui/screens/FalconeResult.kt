@@ -85,7 +85,7 @@ fun FalconeResult(
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center)
-                        Text(text = "Congratulations! You, along with King Shan, have successfully located Queen Al Falcone on ${falconResponse?.planetName} in ${falconeResultViewModel.totalTime.value} time. The kingdom is safe, and Al Falcone faces another 15 years of exile. Well done, brave adventurer!",
+                        Text(text = "Congratulations! You, along with King Shan, have successfully located Queen Al Falcone on ${falconResponse?.planetName} in ${falconeResultViewModel.totalTime.value} hours. The kingdom is safe, and Al Falcone faces another 15 years of exile. Well done, brave adventurer!",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center)
@@ -102,7 +102,7 @@ fun FalconeResult(
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center)
-                        Text(text = "Oh no! Despite your valiant efforts and ${falconeResultViewModel.totalTime.value} time spent searching, Queen Al Falcone remains elusive. The kingdom faces uncertainty, but King Shan's determination remains unshaken. Will you try again and continue the quest?",
+                        Text(text = "Oh no! Despite your valiant efforts and ${falconeResultViewModel.totalTime.value} hours spent searching, Queen Al Falcone remains elusive. The kingdom faces uncertainty, but King Shan's determination remains unshaken. Will you try again and continue the quest?",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center)
