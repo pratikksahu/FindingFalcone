@@ -142,7 +142,7 @@ fun FindFalcone(
                                             modifier = Modifier
                                                 .weight(1f)
                                                 .padding(vertical = 20.dp),
-                                            text = "Total Time : ${falconeViewModel.totalTime.value}",
+                                            text = "Total Time : ${falconeViewModel.totalTime.value} ${if(falconeViewModel.totalTime.value != 0L) "hours" else ""}",
                                             style = MaterialTheme.typography.bodyLarge,
                                             fontWeight = FontWeight.Medium
                                         )
@@ -519,7 +519,7 @@ fun AvailableVehicles(
             items(vehicles) {
                 VehicleInfoItem(
                     modifier = Modifier
-                        .padding(horizontal = 40.dp)
+                        .padding(horizontal = 5.dp)
                         .wrapContentSize()
                         .onSizeChanged {
                             onSizeChanged(it)
@@ -549,14 +549,14 @@ fun VehicleInfoItem(
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Column {
             Text(
-                text = item.name,
+                text = "${item.name} (${item.totalNo} left)",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold
             )
-            Text(
-                text = "Available : ${item.totalNo}",
-                style = MaterialTheme.typography.labelSmall
-            )
+//            Text(
+//                text = "Available : ${item.totalNo}",
+//                style = MaterialTheme.typography.labelSmall
+//            )
             Text(
                 text = "Max Distance: ${item.maxDistance}",
                 style = MaterialTheme.typography.labelSmall
