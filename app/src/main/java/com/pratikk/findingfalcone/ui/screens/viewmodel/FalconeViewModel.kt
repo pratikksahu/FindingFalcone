@@ -54,10 +54,6 @@ class FalconeViewModel constructor(
     val selectedVehiclesMap = mutableStateMapOf<Int, Vehicle>()
     var totalTime = mutableStateOf<Long>(0L)
 
-    init {
-        fetchDetails()
-    }
-
     fun fetchDetails() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.emit(UILoading)
