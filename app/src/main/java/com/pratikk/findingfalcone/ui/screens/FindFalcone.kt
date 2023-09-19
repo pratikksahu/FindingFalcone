@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.pratikk.findingfalcone.data.planets.model.Planet
 import com.pratikk.findingfalcone.data.vehicles.model.Vehicle
+import com.pratikk.findingfalcone.ui.screens.common.BaseExposedDropdown
 import com.pratikk.findingfalcone.ui.screens.common.PlanetSelectionBottomSheet
 import com.pratikk.findingfalcone.ui.screens.common.UIError
 import com.pratikk.findingfalcone.ui.screens.common.UILoading
@@ -64,15 +65,12 @@ import com.pratikk.findingfalcone.ui.screens.viewmodel.FalconeViewModel
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FindFalcone(
-    snackbarHostState:SnackbarHostState,
+    snackbarHostState: SnackbarHostState,
     falconeViewModel: FalconeViewModel,
     findFalcone: () -> Unit = {}
 ) {
     val vehicles by falconeViewModel.vehicles.collectAsState()
-    val destinations1 by falconeViewModel.planets1.collectAsState()
-    val destinations2 by falconeViewModel.planets2.collectAsState()
-    val destinations3 by falconeViewModel.planets3.collectAsState()
-    val destinations4 by falconeViewModel.planets4.collectAsState()
+    val destinations by falconeViewModel.filteredPlanets.collectAsState()
     val selectedPlanetMap = falconeViewModel.selectedPlanetMap
     val selectedVehicleMap = falconeViewModel.selectedVehiclesMap
     val uiState: UIState by falconeViewModel.uiState.collectAsState()
@@ -142,7 +140,7 @@ fun FindFalcone(
                                             modifier = Modifier
                                                 .weight(1f)
                                                 .padding(vertical = 20.dp),
-                                            text = "Total Time : ${falconeViewModel.totalTime.value} ${if(falconeViewModel.totalTime.value != 0L) "hours" else ""}",
+                                            text = "Total Time : ${falconeViewModel.totalTime.value} ${if (falconeViewModel.totalTime.value != 0L) "hours" else ""}",
                                             style = MaterialTheme.typography.bodyLarge,
                                             fontWeight = FontWeight.Medium
                                         )
@@ -251,10 +249,10 @@ fun FindFalcone(
                             selectedPlanetMap = selectedPlanetMap,
                             selectedVehicleMap = selectedVehicleMap,
                             vehicles = vehicles,
-                            destinations = destinations1,
+                            destinations = destinations,
                             destinationIdx = 0,
                             onSearch = {
-                                falconeViewModel.searchPlanets1(it)
+                                falconeViewModel.searchPlanets(it)
                             }, onPlanetClick = {
                                 falconeViewModel.setPlanet(0, it)
                             }, onVehicleClick = {
@@ -267,10 +265,10 @@ fun FindFalcone(
                             selectedPlanetMap = selectedPlanetMap,
                             selectedVehicleMap = selectedVehicleMap,
                             vehicles = vehicles,
-                            destinations = destinations2,
+                            destinations = destinations,
                             destinationIdx = 1,
                             onSearch = {
-                                falconeViewModel.searchPlanets2(it)
+                                falconeViewModel.searchPlanets(it)
                             }, onPlanetClick = {
                                 falconeViewModel.setPlanet(1, it)
                             }, onVehicleClick = {
@@ -283,10 +281,10 @@ fun FindFalcone(
                             selectedPlanetMap = selectedPlanetMap,
                             selectedVehicleMap = selectedVehicleMap,
                             vehicles = vehicles,
-                            destinations = destinations3,
+                            destinations = destinations,
                             destinationIdx = 2,
                             onSearch = {
-                                falconeViewModel.searchPlanets3(it)
+                                falconeViewModel.searchPlanets(it)
                             }, onPlanetClick = {
                                 falconeViewModel.setPlanet(2, it)
                             }, onVehicleClick = {
@@ -299,10 +297,10 @@ fun FindFalcone(
                             selectedPlanetMap = selectedPlanetMap,
                             selectedVehicleMap = selectedVehicleMap,
                             vehicles = vehicles,
-                            destinations = destinations4,
+                            destinations = destinations,
                             destinationIdx = 3,
                             onSearch = {
-                                falconeViewModel.searchPlanets4(it)
+                                falconeViewModel.searchPlanets(it)
                             }, onPlanetClick = {
                                 falconeViewModel.setPlanet(3, it)
                             }, onVehicleClick = {
@@ -367,13 +365,14 @@ fun FindFalcone(
 fun DestinationItem(
     selectedPlanetMap: SnapshotStateMap<Int, Planet>,
     selectedVehicleMap: SnapshotStateMap<Int, Vehicle>,
-    vehicles:List<Vehicle>,
+    vehicles: List<Vehicle>,
     destinations: List<Planet>,
-    destinationIdx:Int,
-    onSearch:(String) -> Unit,
+    destinationIdx: Int,
+    onSearch: (String) -> Unit,
     onPlanetClick: (Planet) -> Unit,
     onVehicleClick: (Vehicle) -> Unit
 ) {
+    val localConfiguration = LocalConfiguration.current
     val showVehicles by remember(selectedPlanetMap[destinationIdx]) {
         derivedStateOf { selectedPlanetMap[destinationIdx] != null }
     }
@@ -387,22 +386,19 @@ fun DestinationItem(
 
         with(density) { (itemHeight * 2).toDp() }
     }
-//                        BaseExposedDropdown(
-//                            modifier = Modifier.padding(bottom = 8.dp),
-//                            selectedItem = selectedPlanetMap[destinationIdx],
-//                            list = {
-//                                destinations1.filter {
-//                                    !selectedPlanetMap.filterKeys { it != destinationIdx }.map { it.value?.name }
-//                                        .contains(it.name)
-//                                }
-//                            },
-//                            onSearch = {
-//                                falconeViewModel.searchPlanets1(it)
-//                            },
-//                            onClick = {
-//                                falconeViewModel.setPlanet(0, it)
-//                            }, hintText = hintText
-//                        )
+    if (localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT)
+    BaseExposedDropdown(
+        modifier = Modifier.padding(bottom = 8.dp),
+        selectedItem = selectedPlanetMap[destinationIdx],
+        list = {
+            destinations.filter {
+                !selectedPlanetMap.filterKeys { it != destinationIdx }.map { it.value.name }
+                    .contains(it.name)
+            }
+        },
+        onSearch = onSearch,
+        onClick = onPlanetClick, hintText = "Destination ${destinationIdx + 1}"
+    ) else
     PlanetSelectionBottomSheet(
         selectedItem = selectedPlanetMap[destinationIdx],
         list = {

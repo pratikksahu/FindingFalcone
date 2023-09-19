@@ -111,6 +111,10 @@ fun BaseExposedDropdown(
             with(density) { itemWidth.toDp() }
         }
     }
+    LaunchedEffect(key1 = expanded, block = {
+        if(!expanded)
+            onSearch("")
+    })
     Column(
         modifier = modifier.clickable {
             expanded = !expanded
