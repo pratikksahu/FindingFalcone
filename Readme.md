@@ -7,7 +7,6 @@ This Android app called "Finding Falcone" is developed with the objective of imp
 Finding Falcone is an Android application that follows the MVVM architectural pattern. It is designed to provide a user-friendly and responsive experience, with components that are aware of Android's lifecycle and configuration changes.
 
 ## Features
-List the key features of your Android app.
 
 - Material 3 UI
 - MVVM architecture for organized and testable code.
